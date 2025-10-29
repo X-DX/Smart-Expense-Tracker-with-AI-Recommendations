@@ -45,7 +45,7 @@ Route::middleware(['auth'])->group(function () {
     // It uses a dynamic parameter {budgetId} to identify which budget record should be loaded,
     // and maps that request to the Livewire component 'BudgetForm'.
     // ----------------------
-    Route::get('budgets/{budgetID}/edit', BudgetForm::class)->name('budgets.edit');
+    Route::get('budgets/{budgetId}/edit', BudgetForm::class)->name('budgets.edit');
 
     Route::get('settings/profile', Profile::class)->name('profile.edit');
     Route::get('settings/password', Password::class)->name('user-password.edit');

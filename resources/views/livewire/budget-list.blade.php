@@ -111,7 +111,7 @@
                                     <p class="text-white/80 text-sm">Monthly Limit</p>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <a href="/budgets/{{ $budget->id }}/edit"
+                                    <a href="/budgets/{{$budget->id}}/edit"
                                         class="p-2 bg-white/20 hover:bg-white/30 rounded-lg text-white transition">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
