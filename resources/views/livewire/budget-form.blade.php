@@ -9,9 +9,15 @@
                     </h1>
                     <p class="text-gray-600 dark:text-gray-300 mt-1">{{ $isEdit ? 'Update your budget details' : 'Set spending limits for better financial control' }}</p>
                 </div>
-                <a href="/budgets" class="text-gray-600 hover:text-gray-900 transition">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                <a href="/budgets"
+                        class="group inline-flex items-center justify-center w-10 h-10 rounded-full 
+                        text-gray-900 dark:text-gray-200 
+                        transition-all duration-300 
+                        hover:bg-gray-200 dark:hover:bg-gray-700">
+                    <svg class="w-6 h-6 transition-transform duration-300 group-hover:scale-125"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12"/>
                     </svg>
                 </a>
             </div>
@@ -111,12 +117,12 @@
                                 <span class="text-gray-500 text-xl">$</span>
                             </div>
                             <input type="number" 
-                                   id="amount"
-                                   wire:model="amount" 
-                                   step="0.01"
-                                   min="0"
-                                   placeholder="0.00"
-                                   class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-lg @error('amount') border-red-500 @enderror">
+                                    id="amount"
+                                    wire:model="amount" 
+                                    step="0.01"
+                                    min="0"
+                                    placeholder="0.00"
+                                    class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-lg @error('amount') border-red-500 @enderror">
                         </div>
                         @error('amount')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -173,7 +179,12 @@
 
             <!-- Form Actions -->
             <div class="flex items-center justify-between">
-                <a href="/budgets" class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 dark:text-gray-300 font-semibold hover:bg-gray-50 dark:hover:bg-gray-40 transition">
+                <a href="/budgets"
+                        class="px-6 py-3 border border-gray-300 rounded-lg 
+                        text-gray-700 dark:text-gray-300 font-semibold 
+                        bg-white dark:bg-gray-800 
+                        hover:bg-gray-400 dark:hover:bg-gray-700 
+                        transition-all duration-300 ease-in-out">
                     Cancel
                 </a>
                 <button type="submit" 
