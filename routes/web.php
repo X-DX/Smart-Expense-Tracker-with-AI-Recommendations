@@ -3,6 +3,7 @@
 use App\Livewire\BudgetForm;
 use App\Livewire\BudgetList;
 use App\Livewire\Categories;
+use App\Livewire\ExpenseForm;
 use App\Livewire\ExpenseList;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
@@ -54,6 +55,8 @@ Route::middleware(['auth'])->group(function () {
     // sorting, pagination, etc.
     // When a user visits this URL, Livewire automatically renders the 'ExpenseList' component
     Route::get('expenses', ExpenseList::class)->name('expenses.index');
+
+    Route::get('/expenses/create', ExpenseForm::class)->name('expenses.create');
 
     Route::get('settings/profile', Profile::class)->name('profile.edit');
     Route::get('settings/password', Password::class)->name('user-password.edit');
