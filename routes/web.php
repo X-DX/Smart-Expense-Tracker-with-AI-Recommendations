@@ -5,6 +5,7 @@ use App\Livewire\BudgetList;
 use App\Livewire\Categories;
 use App\Livewire\ExpenseForm;
 use App\Livewire\ExpenseList;
+use App\Livewire\RecurringExpense;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
@@ -56,7 +57,17 @@ Route::middleware(['auth'])->group(function () {
     // When a user visits this URL, Livewire automatically renders the 'ExpenseList' component
     Route::get('expenses', ExpenseList::class)->name('expenses.index');
 
+    // Define a GET route → when browser opens /expenses/create,
+    // Laravel will directly mount the Livewire component ExpenseForm
+    // (no controller needed — Livewire handles rendering + logic)
     Route::get('/expenses/create', ExpenseForm::class)->name('expenses.create');
+
+
+    // This defines a GET route for the URL: /recurring-expenses
+    // When a user visits this URL in the browser, Laravel will load the Livewire component RecurringExpense
+    // This means the RecurringExpense component will run its mount(), computed properties, and render() method automatically
+    // The route is named 'recurring-expenses.index', so you can link to it using route('recurring-expenses.index')
+    Route::get('recurring-expenses', RecurringExpense::class)->name('recurring-expenses.index');
 
     Route::get('settings/profile', Profile::class)->name('profile.edit');
     Route::get('settings/password', Password::class)->name('user-password.edit');

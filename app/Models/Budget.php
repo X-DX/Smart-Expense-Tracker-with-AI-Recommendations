@@ -46,16 +46,17 @@ class Budget extends Model
     // Get the total amount spent for this budget (for its month and year)
     public function getSpentAmount(): float
     {
-        // If the budget is linked to a category
+        $query = Expense::where('user_id', $this->user_id)
+            ->whereMonth('date', $this->month)
+            ->whereYear('date', $this->year);
+
         if ($this->category_id) {
-            // Use the Category model’s helper method to calculate total spent
-            return $this->category->getTotalSpentForMonth($this->month, $this->year);
+            $query->where('category_id', $this->category_id);
+        } else {
+            $query->whereNull('category_id');
         }
 
-        // If no category, calculate the total spent across all expenses for this user
-        return Expense::forUser($this->user_id) // Query scope for filtering by user
-            ->inMonth($this->month, $this->year) // Query scope for filtering by month and year
-            ->sum('amount'); // Sum up all matching expenses
+        return $query->sum('amount');
     }
 
     // Calculate how much money is left in this budget
