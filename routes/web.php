@@ -61,7 +61,7 @@ Route::middleware(['auth'])->group(function () {
     // Laravel will directly mount the Livewire component ExpenseForm
     // (no controller needed — Livewire handles rendering + logic)
     Route::get('/expenses/create', ExpenseForm::class)->name('expenses.create');
-
+    Route::get('expenses/{expenseId}/edit', ExpenseForm::class)->name('expenses.edit');
 
     // This defines a GET route for the URL: /recurring-expenses
     // When a user visits this URL in the browser, Laravel will load the Livewire component RecurringExpense

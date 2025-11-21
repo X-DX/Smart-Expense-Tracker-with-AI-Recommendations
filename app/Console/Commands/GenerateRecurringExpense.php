@@ -76,23 +76,23 @@ class GenerateRecurringExpense extends Command
         $generatedCount = 0; // Track how many occurrences were created for this item.
 
         // Loop: generate all missing occurrence upto today
-        while ($nextDate $$ $nextDate->lte(now())) {
+        while ($nextDate && $nextDate->lte(date: now())) {
             // Check if an occurrence already exists for this date.
             $exists = Expense::where('parent_expense_id', $recurringExpenses->id)
-            ->whereDate('date', $nextDate)
-            ->exists();
+                ->whereDate('date', $nextDate)
+                ->exists();
 
             // If not generated previously, create the expense occurrence.
-            if(!$exists) {
+            if (!$exists) {
                 $this->createExpenseOccurrence($recurringExpenses, $nextDate);
                 $generatedCount++;
 
                 // Console output for each generated entry.
-                $this->line("Generated: {$recurringExpense->title} for {$nextDate->format('Y-m-d')}");
+                $this->line("Generated: {$recurringExpenses->title} for {$nextDate->format('Y-m-d')}");
             }
 
             // Calculate the next scheduled occurrence.
-            $nextDate = match($recurringExpense->recurring_frequency){
+            $nextDate = match ($recurringExpenses->recurring_frequency) {
                 'daily' => $nextDate->copy()->addDay(),
                 'weekly' => $nextDate->copy()->addweek(),
                 'monthly' => $nextDate->copy()->addmonth(),
@@ -101,12 +101,12 @@ class GenerateRecurringExpense extends Command
             };
 
             // Stop if next date goes beyond defined end date.
-            if($recurringExpense->recurring_end_date && $nextDate && $nextDate->gt($recurringExpense->recurring_end_date)) {
+            if ($recurringExpenses->recurring_end_date && $nextDate && $nextDate->gt($recurringExpenses->recurring_end_date)) {
                 break;
             }
 
             // safety check : dont generate future expenses
-            if($nextDate && $nextDate->gt(now())) {
+            if ($nextDate && $nextDate->gt(now())) {
                 break;
             }
         }
@@ -116,9 +116,10 @@ class GenerateRecurringExpense extends Command
     /**
      * Create a single generated occurrence for a recurring expense.
      */
-    private function createExpenseOccurrence(Expense $recurringExpense, $date){
+    private function createExpenseOccurrence(Expense $recurringExpense, $date)
+    {
         // Create an "auto-generated" one-time expense for the occurrence.
-        Expense:: create([
+        Expense::create([
             'user_id' => $recurringExpense->user_id,
             'category_id' => $recurringExpense->category_id,
             'amount' => $recurringExpense->amount,
