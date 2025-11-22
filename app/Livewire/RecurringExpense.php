@@ -6,7 +6,10 @@ use App\Models\Expense;
 use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Title;
 use Livewire\Component;
+
+#[Title(content: "Recurring Expenses - ExpenseApp")]
 
 class RecurringExpense extends Component
 {

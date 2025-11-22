@@ -7,7 +7,10 @@ use App\Models\Category;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Title;
 use Livewire\Component;
+
+#[Title(content: "Budget Form - ExpenseApp")]
 
 class BudgetForm extends Component
 {
@@ -21,7 +24,7 @@ class BudgetForm extends Component
     public $month; // 📅 Represents the selected month for the budget (integer: 1–12)
     public $year; // 📆 Represents the selected year for the budget (e.g., 2025)
     public $category_id = ''; // 🗂️ Stores the ID of the category this budget belongs to (used in dropdown selection)
-    
+
     // ✏️ Boolean flag to indicate whether the form is in "edit mode"  
     // → true = editing existing budget, false = creating a new one
     public $isEdit = false;
@@ -49,7 +52,7 @@ class BudgetForm extends Component
         // Example: A user shouldn’t create two "Food" budgets for March 2025.
         // ----------------------
         $uniqueRule = 'unique:budgets,category_id,NULL,id,user_id,' . Auth::user()->id . ',month,' . $this->month . ',year,' . $this->year;
-        
+
         // ✏️ If we’re editing, exclude the current budget ID from the uniqueness check
         // → So it doesn’t block updating the same record.
         if ($this->isEdit) {
@@ -117,7 +120,7 @@ class BudgetForm extends Component
         // 🔍 Attempt to find the budget by ID (stored in $this->budgetId).
         // If no budget with that ID exists, Laravel automatically throws a 404 error.
         $budget = Budget::findOrFail($this->budgetId);
-        
+
         // 🔒 Authorization Check
         // Ensures the budget belongs to the currently logged-in user.
         // Prevents users from directly visiting URLs like /budgets/5/edit
@@ -158,7 +161,7 @@ class BudgetForm extends Component
         if ($this->isEdit) {
             // 🔍 Find the existing budget by ID or fail if it doesn’t exist
             $budget = Budget::findOrFail($this->budgetId);
-            
+
             // 🔒 Security check: ensure the budget belongs to the logged-in user
             if ($budget->user_id !== Auth::user()->id) {
                 abort(403);
@@ -183,16 +186,17 @@ class BudgetForm extends Component
     // This data is typically used to populate a <select> dropdown in your form.
     // ----------------------
     #[Computed]
-    public function months(){
+    public function months()
+    {
         // 📅 Create a collection of numbers from 1 to 12 → representing each month
-        return collect(range(1,12))->map(function ($month) {
+        return collect(range(1, 12))->map(function ($month) {
             return [
                 'value' => $month, // 🔢 Numeric value for the month (used in dropdown values, e.g., 1 for January)
 
                 // 🏷️ Convert the numeric month into its full name using Carbon (e.g., 1 → January)
                 // Carbon::create(null, $month, 1) creates a date like "2025-$month-01"
                 // ->format('F') outputs the full month name
-                'name' => Carbon::create(null,$month, 1)->format('F'),
+                'name' => Carbon::create(null, $month, 1)->format('F'),
             ];
         });
     }
@@ -204,7 +208,8 @@ class BudgetForm extends Component
     // the year for which they want to create or view a budget.
     // ----------------------
     #[Computed]
-    public function years(){
+    public function years()
+    {
         // 📆 Get the current year (e.g., 2025)
         $currentYear = now()->year;
         // 🧮 Create a collection of years starting from (current year - 1) to (current year + 2)
@@ -217,17 +222,18 @@ class BudgetForm extends Component
     // It’s typically used to populate a category selection dropdown in the budget creation/edit form.
     // ----------------------
     #[Computed]
-    public function categories(){
+    public function categories()
+    {
         return Category::where('user_id', Auth::user()->id) // 🔒 Filter categories to only those created by the authenticated user
-                    ->orderBy('name') // 🔤 Sort categories alphabetically by name for user-friendly display
-                    ->get(); // 📦 Execute the query and return a collection of Category models
+            ->orderBy('name') // 🔤 Sort categories alphabetically by name for user-friendly display
+            ->get(); // 📦 Execute the query and return a collection of Category models
     }
     public function render()
     {
-        return view('livewire.budget-form',[
-        'categories'=> $this->categories,
-        'months' => $this->months,
-        'years' => $this->years
+        return view('livewire.budget-form', [
+            'categories' => $this->categories,
+            'months' => $this->months,
+            'years' => $this->years
         ]);
     }
 }

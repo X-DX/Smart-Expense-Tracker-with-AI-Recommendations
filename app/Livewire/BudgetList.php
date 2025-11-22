@@ -7,7 +7,10 @@ use App\Models\Category;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Title;
 use Livewire\Component;
+
+#[Title(content: "Budgets - ExpenseApp")]
 
 class BudgetList extends Component
 {
@@ -25,7 +28,8 @@ class BudgetList extends Component
     // The mount() method runs automatically when the component is first loaded.
     // It initializes default values for month and year to the current date.
     // ----------------------
-    public function mount(){
+    public function mount()
+    {
         $this->selectedMonth = now()->month; // 🗓️ Set the default selected month to the current month
         $this->selectedYear = now()->year; // Set the default selected year to the current year
     }
@@ -41,13 +45,14 @@ class BudgetList extends Component
     // remaining amount, usage percentage, and over-budget status.
     // ----------------------
     #[Computed]
-    public function budgets(){
+    public function budgets()
+    {
         return Budget::with('category') // 🔗 Eager load the related 'category' for each budget to avoid N+1 queries
-        ->where('user_id', Auth::user()->id) // 🔒 Only fetch budgets belonging to the authenticated user
-        ->where('month', $this->selectedMonth) // 📅 Filter by the selected month (controlled by Livewire form state)
-        ->where('year', $this->selectedYear) // 📆 Filter by the selected year (also from form state)
-        ->get() // 📥 Retrieve the matching budget records as a collection
-        ->map(function ($budget) { // 🔁 Loop through each budget record to compute additional dynamic properties
+            ->where('user_id', Auth::user()->id) // 🔒 Only fetch budgets belonging to the authenticated user
+            ->where('month', $this->selectedMonth) // 📅 Filter by the selected month (controlled by Livewire form state)
+            ->where('year', $this->selectedYear) // 📆 Filter by the selected year (also from form state)
+            ->get() // 📥 Retrieve the matching budget records as a collection
+            ->map(function ($budget) { // 🔁 Loop through each budget record to compute additional dynamic properties
                 // 💰 Calculate the total amount spent for this budget (likely from related expenses)
                 $budget->spent = $budget->getSpentAmount();
                 // 💵 Calculate how much budget remains after spending
@@ -67,7 +72,8 @@ class BudgetList extends Component
     // It automatically updates whenever its dependent data (like budgets, selectedMonth, or selectedYear) changes.
     // ----------------------
     #[Computed]
-    public function totalBudget(){
+    public function totalBudget()
+    {
         // 🧮 Sum up the 'amount' field of all budget records returned by the budgets() method
         // → $this->budgets refers to the computed collection of budgets filtered by user, month, and year
         // → sum('amount') adds up all the budget amounts for that filtered list
@@ -75,7 +81,8 @@ class BudgetList extends Component
     }
 
     #[Computed]
-    public function totalSpent(){
+    public function totalSpent()
+    {
         // 💸 Calculate the total amount spent across all budgets
         // → Sums up the 'spent' field from each budget in the computed budgets() collection
         // → Automatically updates when budgets, month, or year change
@@ -83,7 +90,8 @@ class BudgetList extends Component
     }
 
     #[Computed]
-    public function totalRemaining(){
+    public function totalRemaining()
+    {
         // 💰 Calculate the total remaining budget across all categories
         // → Adds up each budget's 'remaining' value (budget - spent)
         // → Helps determine how much the user still has available overall
@@ -91,7 +99,8 @@ class BudgetList extends Component
     }
 
     #[Computed]
-    public function overallPercentage(){
+    public function overallPercentage()
+    {
         // 📊 Calculate the overall percentage of the total budget that has been spent
         // → Formula: (total spent ÷ total budget) × 100
         // → Rounded to 1 decimal place for a cleaner display
@@ -100,25 +109,27 @@ class BudgetList extends Component
             return 0;
         }
         // ✅ Return the calculated spending percentage (e.g., 74.5%)
-        return round(($this->totalSpent / $this->totalBudget) * 100,1);
+        return round(($this->totalSpent / $this->totalBudget) * 100, 1);
     }
 
     #[Computed]
-    public function categories(){
+    public function categories()
+    {
         // 🗂️ Retrieve all categories that belong to the currently authenticated user
         // → Filters by user_id to ensure user-specific data isolation
         // → Orders categories alphabetically by 'name' for a better UI experience
         // → Returns a collection of Category models
         return Category::where('user_id', Auth::user()->id)
-                ->orderBy('name')
-                ->get();
+            ->orderBy('name')
+            ->get();
     }
 
     // ----------------------
     // This function shifts the currently selected month and year backward by one month.
     // It uses Carbon to handle date calculations cleanly and automatically adjusts the year when crossing boundaries (e.g., January → December of previous year).
     // ----------------------
-    public function previousMonth(){
+    public function previousMonth()
+    {
         // 🗓️ Create a Carbon date object representing the 1st day of the currently selected month/year
         // → Example: if selectedMonth = 5 and selectedYear = 2025, this creates "2025-05-01"
         $date = Carbon::create($this->selectedYear, $this->selectedMonth, 1)->subMonth();
@@ -145,7 +156,8 @@ class BudgetList extends Component
     // It’s typically used when a user wants to quickly return to “this month” 
     // after navigating to previous or future months.
     // ----------------------
-    public function setCurrentMonth(){
+    public function setCurrentMonth()
+    {
         // 🗓️ Set the selected month to the current month (1–12)
         // → Uses Laravel’s global `now()` helper (an instance of Carbon)
         $this->selectedMonth = now()->month;
@@ -160,7 +172,8 @@ class BudgetList extends Component
     // It ensures the budget exists, verifies ownership, performs deletion,
     // and provides user feedback through a session flash message.
     // ----------------------
-    public function deleteBudget($budgetId){
+    public function deleteBudget($budgetId)
+    {
         // 🔍 Retrieve the budget record from the database by its ID
         // → If no matching record is found, Laravel automatically throws a 404 (Not Found) exception
         $budget = Budget::findOrFail($budgetId);
@@ -174,19 +187,19 @@ class BudgetList extends Component
         // 🗑️ Delete the budget record from the database
         // → This action is irreversible, so it should usually be confirmed via a modal or prompt in the UI
         $budget->delete();
-        session()->flash('message','Budget deleted succssfully.');
+        session()->flash('message', 'Budget deleted succssfully.');
     }
 
-    
+
     public function render()
     {
-        return view('livewire.budget-list',[
-            'budgets'=> $this->budgets,
-            'totalBudget'=> $this->totalBudget,
-            'totalSpent'=> $this->totalSpent,
-            'totalRemaining'=> $this->totalRemaining,
-            'overallPercentage'=> $this->overallPercentage,
-            'categories'=> $this->categories,
+        return view('livewire.budget-list', [
+            'budgets' => $this->budgets,
+            'totalBudget' => $this->totalBudget,
+            'totalSpent' => $this->totalSpent,
+            'totalRemaining' => $this->totalRemaining,
+            'overallPercentage' => $this->overallPercentage,
+            'categories' => $this->categories,
         ]);
     }
 }

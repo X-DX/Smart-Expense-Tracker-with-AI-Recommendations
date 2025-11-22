@@ -4,7 +4,10 @@ namespace App\Livewire;
 
 use App\Models\Category;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Title;
 use Livewire\Component;
+
+#[Title(content: "Categories - ExpenseApp")]
 
 class Categories extends Component
 {
@@ -56,12 +59,12 @@ class Categories extends Component
             //   → ($this->editingId ?: 'NULL') → If editing, ignore the current category’s ID to allow updating without conflict
             //   → 'user_id,' . auth()->id() → Ensures uniqueness is checked only for the current user (multi-user safety)
             'name' => 'required|string|max:255|unique:categories,name,' . ($this->editingId ?: 'NULL') . ',id,user_id,' . auth()->id(),
-            
+
             // 🎨 'color' field validation
             // - 'required' → Must be provided
             // - 'string' → Must be a string (usually a color hex code or CSS color name)
             'color' => 'required|string',
-            
+
             // 🖼️ 'icon' field validation
             // - 'nullable' → Optional field (can be left empty)
             // - 'string' → Must be a valid string if provided
@@ -89,11 +92,12 @@ class Categories extends Component
     // for the currently authenticated user. Automatically re-evaluates
     // when dependent data (like new categories) changes.
     #[Computed]
-    public function categories(){
+    public function categories()
+    {
         return Category::withCount('expenses')
-        ->where('user_id', auth()->user()->id)
-        ->orderBy('name')
-        ->get();
+            ->where('user_id', auth()->user()->id)
+            ->orderBy('name')
+            ->get();
     }
 
     // ----------------------
@@ -105,7 +109,7 @@ class Categories extends Component
         // 🔍 Retrieve the category record from the database using its ID
         // If no matching category is found, Laravel automatically throws a 404 (Not Found) error
         $category = Category::findOrFail($categoryId);
-        
+
         // 🔒 Authorization check — make sure the category belongs to the logged-in user
         // Prevents users from editing other users' categories (security measure)
         if ($category->user_id !== auth()->id()) {
@@ -130,12 +134,13 @@ class Categories extends Component
     // This function handles both creating and updating categories.
     // It validates inputs, checks whether the user is editing or creating, ensures authorization, performs the save/update, flashes a success message, and resets the form for the next action.
     // ----------------------
-    public function save(){
+    public function save()
+    {
         // ✅ Validate all form inputs using the validation rules defined in this Livewire component
         $this->validate();
 
         // ✅ Check if we are editing an existing category (not creating a new one)
-        if($this->isEditing && $this->editingId){
+        if ($this->isEditing && $this->editingId) {
             // 🔍 Find the category record by ID, or fail if it doesn’t exist
             $category = Category::findOrFail($this->editingId);
 
@@ -152,9 +157,9 @@ class Categories extends Component
                 'icon' => $this->icon,
             ]);
             // 💬 Show a success message to the user after updating
-            session()->flash('message','Category updated successfully.');
-        }else{
-        // 🆕 Creating a new category when not in edit mode
+            session()->flash('message', 'Category updated successfully.');
+        } else {
+            // 🆕 Creating a new category when not in edit mode
             Category::create([
                 'user_id' => auth()->id(), // Assign category to the logged-in user
                 'name' => $this->name, // Category name from the form
@@ -162,19 +167,20 @@ class Categories extends Component
                 'icon' => $this->icon, // Optional icon
             ]);
             // 💬 Show a success message after creating a new category
-            session()->flash('message','Category created successfully.');
+            session()->flash('message', 'Category created successfully.');
         }
         // 🔁 Reset the form fields and state so the form is cleared after saving
-        $this->reset(['name','color','icon','editingId','isEditing']);
+        $this->reset(['name', 'color', 'icon', 'editingId', 'isEditing']);
     }
 
     // ----------------------
     // This function cancels the edit operation and resets the form to its default state.
     // It clears all input fields and restores default values, ensuring a clean form for the next action.
     // ----------------------
-    public function cancelEdit(){
+    public function cancelEdit()
+    {
         // 🔁 Reset specific component properties back to their initial state, Clears all form inputs and internal tracking variables
-        $this->reset(['name','color','icon','editingId','isEditing']);
+        $this->reset(['name', 'color', 'icon', 'editingId', 'isEditing']);
         $this->color = "#3B82F6";
     }
 
@@ -183,7 +189,8 @@ class Categories extends Component
     // It ensures that the category exists, belongs to the logged-in user, 
     // and does not contain any associated expenses before deletion.
     // ----------------------
-    public function delete($categoryId){
+    public function delete($categoryId)
+    {
         // 🔍 Find the category by its ID
         // If it doesn't exist, Laravel automatically throws a 404 (Not Found) exception
         $category = Category::findOrFail($categoryId);
@@ -197,15 +204,15 @@ class Categories extends Component
         // 💰 Check if the category has any associated expenses before deletion
         // Using the relationship method expenses(), count the related expense records
         // If one or more exist, prevent deletion and show an error message
-        if($category->expenses()->count() > 0){
-            session()->flash('error','Can not delete category with existing expenses.');
+        if ($category->expenses()->count() > 0) {
+            session()->flash('error', 'Can not delete category with existing expenses.');
             return;
         }
 
         // 🗑️ Proceed with deleting the category since it’s safe to do so
         $category->delete();
         // 💬 Flash a success message to inform the user of the successful deletion
-        session()->flash('message','Category deleted successfully!');
+        session()->flash('message', 'Category deleted successfully!');
     }
 
     // ----------------------
@@ -214,8 +221,8 @@ class Categories extends Component
     // Renders the corresponding Blade view and passes reactive data to it.
     public function render()
     {
-        return view('livewire.categories',[
-            'categories'=> $this->categories,
+        return view('livewire.categories', [
+            'categories' => $this->categories,
         ]);
     }
 }

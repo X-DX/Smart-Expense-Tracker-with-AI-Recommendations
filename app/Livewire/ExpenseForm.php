@@ -6,7 +6,10 @@ use App\Models\Category;
 use App\Models\Expense;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Title;
 use Livewire\Component;
+
+#[Title(content: "Expense Form - ExpenseApp")]
 
 class ExpenseForm extends Component
 {

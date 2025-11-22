@@ -6,8 +6,11 @@ use App\Models\Expense;
 use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithPagination;
+
+#[Title(content: "Expenses List - ExpenseApp")]
 
 class ExpenseList extends Component
 {

@@ -3,6 +3,7 @@
 use App\Livewire\BudgetForm;
 use App\Livewire\BudgetList;
 use App\Livewire\Categories;
+use App\Livewire\Dashboard;
 use App\Livewire\ExpenseForm;
 use App\Livewire\ExpenseList;
 use App\Livewire\RecurringExpense;
@@ -17,7 +18,11 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-Route::view('dashboard', 'dashboard')
+// Route::view('dashboard', 'dashboard')
+//     ->middleware(['auth', 'verified'])
+//     ->name('dashboard');
+
+Route::get('dashboard', Dashboard::class)
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
